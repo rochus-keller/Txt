@@ -232,8 +232,8 @@ accept:
 
 bool TextCtrl::inputMethodEvent(QInputMethodEvent *e)
 {
-    // Auf Linux ist diese Methode nötig für Ü, Ö, etc.
-    // Das ist eine sehr vereinfachte Methode. Für eine vollständige Behandlung siehe
+    // Auf Linux ist diese Methode nÃ¶tig fÃ¼r Ãœ, Ã–, etc.
+    // Das ist eine sehr vereinfachte Methode. FÃ¼r eine vollstÃ¤ndige Behandlung siehe
     // QTextControlPrivate::inputMethodEvent in Qt/src/qui/text/qtextcontrol.cpp
     TextView* me = view();
     QString text = e->commitString();
@@ -324,12 +324,10 @@ bool TextCtrl::mouseDoubleClickEvent(QMouseEvent *e)
 	pos.setX( pos.x() - d_vr.x() );
 	pos.setY( pos.y() - d_vr.y() );
 
-	// Das stürzt in OutlineDeleg::edit
-//    if( e->modifiers() == Qt::NoModifier && me->getCursor().isLink() )
-//		emit linkActivated( me->getCursor().getLink() );
-//    else
     if( !me->getCursor().isAnchor() )
         me->selectWordAt( pos );
+    else
+	activateAnchor();
 
 	return true;
 }
