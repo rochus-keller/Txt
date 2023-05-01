@@ -72,7 +72,7 @@ void TextEdit::setHtml(const QString & str)
     doc->setHtml( str );
     d_txt->getView()->setDocument( doc );
     d_txt->getView()->getDocument()->setModified(false);
-    // BUG: fügt leerzeilen an
+    // BUG: fÃ¼gt leerzeilen an
 }
 
 QString TextEdit::getHtml(bool qtSpecifics) const

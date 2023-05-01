@@ -1,11 +1,11 @@
 /*
-* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -44,9 +44,9 @@ QSizeF LinkIcon::intrinsicSize(QTextDocument *doc, int posInDocument, const QTex
     QTextCharFormat tf = format.toCharFormat();
     QFontMetricsF fm( tf.font() );
 
-    QSizeF size( fm.height(), fm.height() );
+    QSizeF size( fm.height() + 1.0, fm.height() + 1.0);
     size.setHeight( size.height() - fm.descent() - 1.0 );
-    // Wenn man die Höhe verändert, wird das Bild gestaucht.
+    // Wenn man die HÃ¶he verÃ¤ndert, wird das Bild gestaucht.
 	return size;
 }
 
@@ -56,7 +56,7 @@ void LinkIcon::drawObject(QPainter *p, const QRectF &r, QTextDocument *doc,
 	QTextCharFormat tf = format.toCharFormat();
     QFontMetricsF fm( tf.font() );
     // Qt positioniert das Bild auf die Grundlinie der Schrift.
-	// Da in intrinsicSize die Höhe gestaucht, mache hier nach unten wieder wett.
+	// Da in intrinsicSize die HÃ¶he gestaucht, mache hier nach unten wieder wett.
     QRectF rr = r.adjusted( 0, 0, 0, fm.descent() + 1.0 );
 
     QPixmap pix( tf.stringProperty( Styles::PropIcon ) );

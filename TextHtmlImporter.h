@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
-** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.info>
+** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **

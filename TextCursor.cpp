@@ -1,11 +1,11 @@
 /*
-* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -292,7 +292,7 @@ bool TextCursor::addItemLeft(bool jumpout )
 
 	if( outer )
 	{
-		// Füge nach dem letzten Block des aktuellen Levels einen neuen Block ein
+		// FÃ¼ge nach dem letzten Block des aktuellen Levels einen neuen Block ein
 		d_cur.setPosition( last.position() );
 		d_cur.movePosition( QTextCursor::EndOfBlock );
 		d_cur.beginEditBlock();
@@ -358,7 +358,7 @@ bool TextCursor::indentList( quint8 level )
 	if( level == indent )
 		return true;
 
-	if( level > indent + 1 ) // Korrigiere grössere Einrückungen als 1
+	if( level > indent + 1 ) // Korrigiere grÃ¶ssere EinrÃ¼ckungen als 1
 		level = indent + 1;
 
 	QTextBlockFormat f;
@@ -509,12 +509,12 @@ bool TextCursor::isUrl() const
 
 QUrl TextCursor::getUrl() const
 {
-	return QUrl::fromEncoded( d_cur.charFormat().anchorHref().toAscii() );
+    return QUrl::fromEncoded( d_cur.charFormat().anchorHref().toUtf8() );
 }
 
 QByteArray TextCursor::getUrlEncoded() const
 {
-	return d_cur.charFormat().anchorHref().toAscii();
+    return d_cur.charFormat().anchorHref().toUtf8();
 }
 
 QString TextCursor::getAnchorText() const
@@ -541,7 +541,7 @@ QByteArray TextCursor::getLink() const
     QByteArray data = f.property( Styles::PropLink ).toByteArray();
     if( !data.isEmpty() )
         return data;
-    data = f.anchorHref().toAscii();
+    data = f.anchorHref().toUtf8();
     if( data.startsWith( Styles::s_linkSchema ) )
         data = QByteArray::fromBase64( data.mid( ::strlen( Styles::s_linkSchema ) ) );
     return data;
@@ -549,7 +549,7 @@ QByteArray TextCursor::getLink() const
 
 void TextCursor::insertLink(const QByteArray & data, QString text, const QString &icon, const QString &id)
 {
-    // Text muss nichts über den Inhalt von data wissen, sondern diesen nur speichern
+    // Text muss nichts Ã¼ber den Inhalt von data wissen, sondern diesen nur speichern
     QTextCharFormat f = d_styles->getLink();
     f.setAnchor( true );
     f.setProperty( Styles::PropLink, data );
@@ -574,9 +574,9 @@ void TextCursor::insertLink(const QByteArray & data, QString text, const QString
 		f.setFontWeight(QFont::Normal);
 	}
 	d_cur.insertText( text, f );
-	// NOTE: solange f nicht ändert, werden mehrere insertText als ein zusammengehöriges Fragment
-	// erkannt. Wenn man z.B. ID Bold macht, muss man die Zusammengehörigkeit sonst irgendwie konstruieren.
-	// Hier machen wir das mittels PropAnchorId, das über alle Fragmente des Links gleich bleibt; der
+	// NOTE: solange f nicht Ã¤ndert, werden mehrere insertText als ein zusammengehÃ¶riges Fragment
+	// erkannt. Wenn man z.B. ID Bold macht, muss man die ZusammengehÃ¶rigkeit sonst irgendwie konstruieren.
+	// Hier machen wir das mittels PropAnchorId, das Ã¼ber alle Fragmente des Links gleich bleibt; der
 	// konkrete Wert von PropAnchorId ist irrelevant; darum hier sogar per qrand() erzeugt.
 	removeCharFormat( d_cur, f );
 }
@@ -595,7 +595,7 @@ void TextCursor::insertUrl( const QString& uri, bool encoded, const QString& tex
 		f.setAnchorHref( tmp.toEncoded() );
 	}
 	if( text.isEmpty() )
-        d_cur.insertText( createUrlText( QUrl::fromEncoded( f.anchorHref().toAscii() ) ), f );
+        d_cur.insertText( createUrlText( QUrl::fromEncoded( f.anchorHref().toUtf8() ) ), f );
 	else
 		d_cur.insertText( text, f );
 	removeCharFormat( d_cur, f );
@@ -625,25 +625,25 @@ void TextCursor::deleteCharOrSelection( bool left )
 	if( left )
 	{
 		if( d_cur.hasSelection() )
-			d_cur.deletePreviousChar(); // lösche einfach Selektion
+			d_cur.deletePreviousChar(); // lÃ¶sche einfach Selektion
 		else
 		{
 			if( !d_cur.movePosition( QTextCursor::PreviousCharacter ) )
 				return;
 			adjustSelection();
-			// Wenn links ein Anchor war, ist er nun selektiert, und deleteChar löscht Selektion
+			// Wenn links ein Anchor war, ist er nun selektiert, und deleteChar lÃ¶scht Selektion
 			d_cur.deleteChar();
 		}
 	}else
 	{
 		if( d_cur.hasSelection() )
-			d_cur.deleteChar(); // lösche einfach Selektion 
+			d_cur.deleteChar(); // lÃ¶sche einfach Selektion 
 		else
 		{
 			if( !d_cur.movePosition( QTextCursor::NextCharacter ) )
 				return;
 			adjustSelection();
-			// Wenn rechts ein Anchor war, ist er nun selektiert, und deletePrevious löscht ganze Selektion.
+			// Wenn rechts ein Anchor war, ist er nun selektiert, und deletePrevious lÃ¶scht ganze Selektion.
 			d_cur.deletePreviousChar();
 		}
 	}
@@ -653,7 +653,7 @@ void TextCursor::deleteCharOrSelection( bool left )
 bool TextCursor::calcAnchorBounds( const QTextCursor& cur, int& left, int& right )
 {
 	// Annahmen:
-	// 1) ein Anchor verläuft nie über einen Block oder einen Soft-Break hinweg.
+	// 1) ein Anchor verlÃ¤uft nie Ã¼ber einen Block oder einen Soft-Break hinweg.
 	// 2) Curor:position() ist zwischen den Zeichen. pos=0 hat also nur rechts Zeichen.
 	// 3) Jeder Block endet mit einem Zeilenumbruchzeichen. Die erste position() eines Blocks
     //    liegt unmittelbar rechts vom Zeilenumbruchzeichen (oder vom Dokumentenanfang).
@@ -679,10 +679,10 @@ bool TextCursor::calcAnchorBounds( const QTextCursor& cur, int& left, int& right
 		// Das Fragment ist Teil eines Links
 		if( it.fragment().charFormat().hasProperty(Styles::PropAnchorId) )
 		{
-			// Anchor hat das neue Format und kann sich über mehrere Fragmente erstrecken
+			// Anchor hat das neue Format und kann sich Ã¼ber mehrere Fragmente erstrecken
 
 			const int id = it.fragment().charFormat().intProperty( Styles::PropAnchorId );
-			// Suche den tatsächlichen Anfang des Anchors
+			// Suche den tatsÃ¤chlichen Anfang des Anchors
 			for( it = cur.block().begin(); !it.atEnd(); ++it )
 			{
 				if( it.fragment().charFormat().intProperty( Styles::PropAnchorId ) == id )
@@ -962,7 +962,7 @@ bool TextCursor::addList( QTextCursor& cur, const Styles* styles, QTextListForma
 		// Wir sind noch nicht in der Liste, eine neue wird erstellt.
         cur.insertFrame( styles->getListFrameFormat() );
         // TODO: insertFrame bereinigen
-		// insertFrame fügt zwei Blocks ein ohne irgendwelche Formate.
+		// insertFrame fÃ¼gt zwei Blocks ein ohne irgendwelche Formate.
 		QTextCursor next = cur;
 		next.movePosition( QTextCursor::NextBlock );
 		next.setBlockFormat( styles->getBlockFormat( Styles::PAR ) );
@@ -991,7 +991,7 @@ bool TextCursor::addList( QTextCursor& cur, const Styles* styles, QTextListForma
 
 bool TextCursor::canAddListItem( const QTextCursor& cur )
 {
-	// RISK: 7.6.07: neu nur noch einstufige Listen unterstützt
+	// RISK: 7.6.07: neu nur noch einstufige Listen unterstÃ¼tzt
 	return canAddObject( cur ); // || cur.currentList();
 }
 
@@ -1001,7 +1001,7 @@ bool TextCursor::addCodeBlock( QTextCursor& cur, const Styles* styles )
 
     cur.insertFrame( styles->getCodeFrameFormat() );
     // TODO: insertFrame bereinigen
-	// insertFrame fügt zwei Blocks ein ohne irgendwelche Formate. Setze es auf PAR.
+	// insertFrame fÃ¼gt zwei Blocks ein ohne irgendwelche Formate. Setze es auf PAR.
 	QTextCursor next = cur;
 	next.movePosition( QTextCursor::NextBlock );
 	next.setBlockFormat( styles->getBlockFormat( Styles::PAR ) );

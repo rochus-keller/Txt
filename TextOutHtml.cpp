@@ -1,11 +1,11 @@
 /*
-* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -28,7 +28,7 @@
 #include <Txt/Styles.h>
 using namespace Txt;
 
-// TextOutHtml::transformAnchor wird nur noch in FlowLine1 verwendet! Wird nicht mehr unterstützt.
+// TextOutHtml::transformAnchor wird nur noch in FlowLine1 verwendet! Wird nicht mehr unterstÃ¼tzt.
 
 QString TextOutHtml::htmlToPlainText( const QString& html, bool simlified )
 {
@@ -48,7 +48,7 @@ QString LinkRendererInterface::renderHref( const QByteArray& link ) const
 QString LinkRendererInterface::defaultRenderHref(const QByteArray &link)
 {
 	return QString("%1%2").arg( QLatin1String( Styles::s_linkSchema ) ).
-			arg( QString::fromAscii( link.toBase64() ) );
+            arg( QString::fromUtf8( link.toBase64() ) );
 }
 
 bool LinkRendererInterface::renderLink( TextCursor&, const QByteArray& ) const
@@ -107,7 +107,7 @@ void TextOutHtml::emitAttribute(const char *attribute, const QString &value)
 
 void TextOutHtml::emitFragments(const QTextBlock &block)
 {
-	// NOTE: dieser Code kann auch mit Links umgehen, die sich mit gleichem PropAnchorId über mehrere
+	// NOTE: dieser Code kann auch mit Links umgehen, die sich mit gleichem PropAnchorId Ã¼ber mehrere
 	// Fragmente erstrecken.
 	QTextBlock::Iterator it = block.begin();
 	while( !it.atEnd() )
@@ -138,11 +138,11 @@ void TextOutHtml::emitFragments(const QTextBlock &block)
 				{
 					html += QString("<a href=\"%1\">").arg(
 								d_lri->renderHref( QByteArray::fromBase64(
-								format.anchorHref().mid( ::strlen( Styles::s_linkSchema ) ).toAscii() ) ) );
+                                format.anchorHref().mid( ::strlen( Styles::s_linkSchema ) ).toUtf8() ) ) );
 				}
 				else
 				{
-					QUrl url = QUrl::fromEncoded( format.anchorHref().toAscii() );
+                    QUrl url = QUrl::fromEncoded( format.anchorHref().toUtf8() );
 					if( d_noFileDirs && url.scheme().startsWith( QLatin1String("file"), Qt::CaseInsensitive ) )
 						url = QUrl::fromLocalFile( QFileInfo( url.toLocalFile() ).fileName() );
 					html += QString("<a href=\"%1\">").arg( url.toEncoded().data() );
@@ -162,7 +162,7 @@ void TextOutHtml::emitFragments(const QTextBlock &block)
 				// Die Assertion trifft wegen Links mit Icons nicht mehr zu
 
 				txt.replace( QChar::ObjectReplacementCharacter, QChar(' ' ) );
-				emitText( it.fragment().charFormat(), Qt::escape(txt) );
+                emitText( it.fragment().charFormat(), txt.toHtmlEscaped() );
 			}
 			if( multiFragmentLink )
 			{

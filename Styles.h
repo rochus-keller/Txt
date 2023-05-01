@@ -2,13 +2,13 @@
 #define _TEXT_STYLES
 
 /*
-* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -36,39 +36,39 @@ namespace Txt
         static const char* s_linkSchema;
 
 		Styles( QObject*, float pointSize = 10.0, float titleFactor = 1.0, 
-			float margin = 5.0, bool parFirstIndent = false );
+            float margin = 5.0, bool parFirstIndent = false );
 		void setup( float pointSize = 10.0, float titleFactor = 1.0, 
-			float margin = 5.0, bool parFirstIndent = false );
+            float margin = 5.0, bool parFirstIndent = false );
 		void setFontStyle( const QString& family, float pointSize, float titleFactor = 1.0 );
 
-		// Folgende Konstanten werden als IDs für QTextFormat::setProperty() verwendet.
+		// Folgende Konstanten werden als IDs fÃ¼r QTextFormat::setProperty() verwendet.
 		// Jeder QTextBlock bzw. sein QTextBlockFormat hat genau ein PropParagraph, das
 		// die Funktion des Blocks festlegt. Tables und Listen umfassen einen oder
 		// mehrere QTextBlocks, die jeweils dasselbe PropParagraph haben.
-		// Listen können verschachtelt werden. 
-		// Tabellen können nicht verschachtelt werden und keine Listen enthalten.
+		// Listen kÃ¶nnen verschachtelt werden. 
+		// Tabellen kÃ¶nnen nicht verschachtelt werden und keine Listen enthalten.
 
 		// Ein Paragraph ist ein Zeichenstrom, der Links, Inline-Objects und Inline-
 		// Images enthalten kann. Was ist mit Formeln?
-		// Ein Link umfasst mehrere Zeichen, die als ganzes geschützt sind. 
+		// Ein Link umfasst mehrere Zeichen, die als ganzes geschÃ¼tzt sind. 
 		// Inline-Objects/Images werden als Zeichen aufgefasst (by Value).
 
 
 		enum Property { 
-			// Property für QTextBlockFormat:
+			// Property fÃ¼r QTextBlockFormat:
 			PropBlockType = QTextFormat::UserProperty + 1, // Wert aus ParagraphStyle
 			PropFrameType, // Werte aus FrameType
 
-			// Properties für QTextCharFormat:
+			// Properties fÃ¼r QTextCharFormat:
 			PropLink, // Wert: BML, gespeichert als QByteArray
 
 			PropListOwner, // Wert objectIndex() der umgebenden Liste
 
-			PropSize,	// Für Image, optional
-			PropImage,	// Für Image, wie ein CharProperty, d.h. kein ParagraphStyle
-            PropIcon,   // Für LinkIcon, die Adresse der Ressource
+			PropSize,	// FÃ¼r Image, optional
+			PropImage,	// FÃ¼r Image, wie ein CharProperty, d.h. kein ParagraphStyle
+            PropIcon,   // FÃ¼r LinkIcon, die Adresse der Ressource
 
-			PropAnchorId // int, Laufnummer, für jeden Anchor im Dokument eindeutig
+			PropAnchorId // int, Laufnummer, fÃ¼r jeden Anchor im Dokument eindeutig
 		};
 	
 		enum ParagraphStyle {
@@ -76,7 +76,7 @@ namespace Txt
 			H1, H2, H3, H4, H5, H6, // Titles
 			PAR,	// Paragraph
 			// Hilfsformate
-			_CODE,	// Non-Breakable Line, nicht in Menü angeboten
+			_CODE,	// Non-Breakable Line, nicht in MenÃ¼ angeboten
 			MAX_PARAGRAPH_STYLE
 		};
 		static const float s_titleFactor[];

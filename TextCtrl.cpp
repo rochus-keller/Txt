@@ -1,11 +1,11 @@
 /*
-* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QtDebug>
+#include <QMimeData>
 using namespace Txt;
 
 TextCtrl::TextCtrl(QObject* owner, TextView* view ):
@@ -65,7 +66,7 @@ void TextCtrl::handleInvalidate( const QRectF& r )
 {
 	QRect rr = r.toRect();
 	rr.translate( d_vr.x(), d_vr.y() );
-    rr = rr.intersect( d_vr );
+    rr = rr.intersected( d_vr );
     if ( rr.isEmpty())
         return;
 	emit invalidate( rr );
@@ -326,8 +327,8 @@ bool TextCtrl::mouseDoubleClickEvent(QMouseEvent *e)
 
     if( !me->getCursor().isAnchor() )
         me->selectWordAt( pos );
-    else
-	activateAnchor();
+	else
+		activateAnchor();
 
 	return true;
 }

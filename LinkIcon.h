@@ -2,13 +2,13 @@
 #define _TEXT_LINKICON
 
 /*
-* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -21,7 +21,12 @@
 */
 
 #include <QObject>
+#ifndef Q_MOC_RUN
 #include <QAbstractTextDocumentLayout>
+#else
+// TODO: this works, but we shouldn't have to repeat it here (NOTE that we need the ifndef to avoid compiler errors)
+Q_DECLARE_INTERFACE(QTextObjectInterface, "org.qt-project.Qt.QTextObjectInterface")
+#endif
 #include <QTextCharFormat>
 
 namespace Txt
@@ -29,7 +34,7 @@ namespace Txt
 	class LinkIcon : public QObject, public QTextObjectInterface  
 	{
 		Q_OBJECT
-		Q_INTERFACES(QTextObjectInterface)
+        Q_INTERFACES(QTextObjectInterface)
 	public:
 		enum { Type = QTextFormat::UserObject + 2 };
 

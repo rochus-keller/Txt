@@ -2,13 +2,13 @@
 #define __Txt_TextInStream__
 
 /*
-* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -43,7 +43,7 @@ namespace Txt
 					Frame 'frag' or 'img' or 'anch'
 
 			frag:
-				[ Slot <format bitset> ]	// UInt8, Format wird mit jedem frag zurückgesetzt
+				[ Slot <format bitset> ]	// UInt8, Format wird mit jedem frag zurÃ¼ckgesetzt
 				Slot <text>					// String, Text kann \n und \r enthalten
 			lst:
 				Slot 'il' = 0..255 <indentation level>	// UInt8

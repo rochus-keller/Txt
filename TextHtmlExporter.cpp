@@ -47,7 +47,7 @@
 #include "private/qtextdocument_p.h"
 using namespace Txt;
 
-// 1:1 übernommen aus Qt 5.2.1
+// 1:1 Ã¼bernommen aus Qt 5.2.1
 // font-weight korrigiert
 // alle -qt styles rausgeworfen
 
@@ -630,7 +630,7 @@ void TextHtmlExporter::emitBlockAttributes(const QTextBlock &block)
         html += QLatin1Char(';');
     }
 
-    // Nicht unterstützt in Qt 4.4.3
+    // Nicht unterstÃ¼tzt in Qt 4.4.3
 //    if (format.lineHeightType() != QTextBlockFormat::SingleHeight) {
 //        switch (format.lineHeightType()) {
 //            case QTextBlockFormat::ProportionalHeight:
@@ -708,7 +708,7 @@ void TextHtmlExporter::emitBlock(const QTextBlock &block)
                 case QTextListFormat::ListSquare: html += QLatin1String("<ul type=\"square\""); break;
                 case QTextListFormat::ListLowerAlpha: html += QLatin1String("<ol type=\"a\""); break;
                 case QTextListFormat::ListUpperAlpha: html += QLatin1String("<ol type=\"A\""); break;
-                // Nicht unterstützt in Qt 4.4.3
+                // Nicht unterstÃ¼tzt in Qt 4.4.3
 //                case QTextListFormat::ListLowerRoman: html += QLatin1String("<ol type=\"i\""); break;
 //                case QTextListFormat::ListUpperRoman: html += QLatin1String("<ol type=\"I\""); break;
                 default: html += QLatin1String("<ul"); // ### should not happen
@@ -722,7 +722,7 @@ void TextHtmlExporter::emitBlock(const QTextBlock &block)
                 styleString += QLatin1Char(';');
             }
 
-            // Nicht unterstützt in Qt 4.4.3
+            // Nicht unterstÃ¼tzt in Qt 4.4.3
 //            if (format.hasProperty(QTextFormat::ListNumberPrefix)) {
 //                QString numberPrefix = format.numberPrefix();
 //                numberPrefix.replace(QLatin1Char('"'), QLatin1String("\\22"));

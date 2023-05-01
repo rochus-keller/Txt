@@ -2,7 +2,7 @@
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
-** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.info>
+** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
@@ -61,7 +61,7 @@
 //#define NO_CSSPARSER // TEST
 
 // 1:1 QTextHtmlParser von Qt 5.2.1 aus qtexthtmlparser.cpp
-// Fazit der Übung: immer noch derselbe Fehler wie in 4.4.3: zuviele Zeilenumbrüche
+// Fazit der Ãœbung: immer noch derselbe Fehler wie in 4.4.3: zuviele ZeilenumbrÃ¼che
 
 namespace Txt
 {
@@ -672,14 +672,6 @@ void TextHtmlParser::parseTag()
     // if close tag just close
     if (hasPrefix(QLatin1Char('/'))) {
         if (nodes.last().id == Html_style) {
-#ifndef NO_CSSPARSER
-            QCss::Parser parser(nodes.last().text);
-            QCss::StyleSheet sheet;
-            sheet.origin = QCss::StyleSheetOrigin_Author;
-            parser.parse(&sheet ); //, Qt::CaseInsensitive);
-            inlineStyleSheets.append(sheet);
-            resolveStyleSheetImports(sheet);
-#endif
         }
         parseCloseTag();
         return;
@@ -714,9 +706,6 @@ void TextHtmlParser::parseTag()
     resolveNode();
 
     const int nodeIndex = nodes.count() - 1; // this new node is always the last
-#ifndef NO_CSSPARSER
-    node->applyCssDeclarations(declarationsForNode(nodeIndex), resourceProvider);
-#endif
     applyAttributes(node->attributes);
 
     // finish tag
@@ -1209,349 +1198,6 @@ void TextHtmlParserNode::initializeProperties(const TextHtmlParserNode *parent, 
     }
 }
 
-void TextHtmlParserNode::setListStyle(const QVector<QCss::Value> &cssValues)
-{
-#ifdef NO_CSSPARSER
-	Q_ASSERT( false );
-	return;
-#endif
-	for (int i = 0; i < cssValues.count(); ++i)
-	{
-		if (cssValues.at(i).type == QCss::Value::KnownIdentifier)
-		{
-			switch (static_cast<QCss::KnownValue>(cssValues.at(i).variant.toInt()))
-			{
-                case QCss::Value_Disc: hasOwnListStyle = true; listStyle = QTextListFormat::ListDisc; break;
-                case QCss::Value_Square: hasOwnListStyle = true; listStyle = QTextListFormat::ListSquare; break;
-                case QCss::Value_Circle: hasOwnListStyle = true; listStyle = QTextListFormat::ListCircle; break;
-                case QCss::Value_Decimal: hasOwnListStyle = true; listStyle = QTextListFormat::ListDecimal; break;
-                case QCss::Value_LowerAlpha: hasOwnListStyle = true; listStyle = QTextListFormat::ListLowerAlpha; break;
-                case QCss::Value_UpperAlpha: hasOwnListStyle = true; listStyle = QTextListFormat::ListUpperAlpha; break;
-//                case QCss::Value_LowerRoman: hasOwnListStyle = true; listStyle = QTextListFormat::ListLowerRoman; break;
-//                case QCss::Value_UpperRoman: hasOwnListStyle = true; listStyle = QTextListFormat::ListUpperRoman; break;
-                default: break;
-            }
-        }
-    }
-    // allow individual list items to override the style
-    if (id == Html_li && hasOwnListStyle)
-        blockFormat.setProperty(QTextFormat::ListStyle, listStyle);
-}
-
-class MyValueExtractor
-{
-public:
-	QVector<QCss::Declaration> declarations;
-	QFont font;
-	MyValueExtractor(const QVector<QCss::Declaration> &d, const QFont& f ):
-		declarations(d),font(f){}
-
-	int lengthValue(const QCss::Value& v)
-	{
-		QString s = v.variant.toString();
-		s.reserve(s.length());
-		enum { None, Px, Ex, Em } unit = None;
-		if (s.endsWith(QLatin1String("px"), Qt::CaseInsensitive))
-			unit = Px;
-		else if (s.endsWith(QLatin1String("ex"), Qt::CaseInsensitive))
-			unit = Ex;
-		else if (s.endsWith(QLatin1String("em"), Qt::CaseInsensitive))
-			unit = Em;
-
-		if (unit != None)
-			s.chop(2);
-
-		bool ok;
-		qreal number = s.toDouble(&ok);
-		if (!ok)
-			return 0;
-
-		// folgendes führt zu Zerstörung der Font im Falle Multithreading
-		//		QFontMetrics fm(font);
-		//		if (unit == Ex)
-		//			return qRound(fm.xHeight() * number);
-		//		else if (unit == Em)
-		//			return qRound(fm.height() * number);
-
-		// font.resolve() & QFont::SizeResolved ist false
-		// qDebug() << font; // hier kommt "Droid Sans,8,-1,5,50,0,0,0,0,0"
-		int size = -1;
-		if( font.pointSize() > 0 )
-			size = font.pointSize();
-		else
-			size = font.pixelSize();
-
-		// Lösung zur Vermeidung von QFontMetrics
-		if( size > 0 )
-		{
-			if (unit == Ex)
-				// it?s a convenient fiction to assume that 1ex is equivalent to 0.5em
-				return qRound(size * 0.5 * number);
-			else if (unit == Em)
-				// In CSS, one "em" is defined to be the value of font-size for a given font
-				return qRound(size * number);
-		}
-
-		return qRound(number);
-	}
-	int lengthValue(const QCss::Declaration &decl)
-	{
-		if (decl.values.count() < 1)
-			return 0;
-		return lengthValue(decl.values.first());
-	}
-	void lengthValues(const QCss::Declaration &decl, int *m)
-	{
-		int i;
-		for (i = 0; i < qMin(decl.values.count(), 4); i++)
-			m[i] = lengthValue(decl.values[i]);
-
-		if (i == 0) m[0] = m[1] = m[2] = m[3] = 0;
-		else if (i == 1) m[3] = m[2] = m[1] = m[0];
-		else if (i == 2) m[2] = m[0], m[3] = m[1];
-		else if (i == 3) m[3] = m[1];
-	}
-	bool extractBox(int *margins, int *paddings )
-	{
-		bool hit = false;
-		for (int i = 0; i < declarations.count(); i++)
-		{
-			const QCss::Declaration &decl = declarations.at(i);
-			switch (decl.propertyId)
-			{
-			case QCss::PaddingLeft:
-				paddings[QCss::LeftEdge] = lengthValue(decl);
-				break;
-			case QCss::PaddingRight:
-				paddings[QCss::RightEdge] = lengthValue(decl);
-				break;
-			case QCss::PaddingTop:
-				paddings[QCss::TopEdge] = lengthValue(decl);
-				break;
-			case QCss::PaddingBottom:
-				paddings[QCss::BottomEdge] = lengthValue(decl);
-				break;
-			case QCss::Padding:
-				lengthValues(decl, paddings);
-				break;
-			case QCss::MarginLeft:
-				margins[QCss::LeftEdge] = lengthValue(decl);
-				break;
-			case QCss::MarginRight:
-				margins[QCss::RightEdge] = lengthValue(decl);
-				break;
-			case QCss::MarginTop:
-				margins[QCss::TopEdge] = lengthValue(decl);
-				break;
-			case QCss::MarginBottom:
-				margins[QCss::BottomEdge] = lengthValue(decl);
-				break;
-			case QCss::Margin:
-				lengthValues(decl, margins);
-				break;
-			default:
-				continue;
-			}
-			hit = true;
-		}
-
-		return hit;
-	}
-};
-
-void TextHtmlParserNode::applyCssDeclarations(const QVector<QCss::Declaration> &declarations, const QTextDocument *resourceProvider)
-{
-#ifdef NO_CSSPARSER
-	Q_ASSERT( false );
-	return;
-#endif
-
-	QCss::ValueExtractor extractor(declarations);
-	QFont f;
-	int adjustment = -255;
-	extractor.extractFont(&f, &adjustment);
-
-	MyValueExtractor ext2(declarations, f);
-	ext2.extractBox(margin, padding); // NOTE: In Original gibt es hier einen Fehler
-	// Sobald ein style="padding(-xyz):.." im HTML auftaucht, verschwindet die Systemschrift mit Konsolenmeldung
-	// X Error: RenderBadGlyphSet (invalid GlyphSet parameter) 145 Extension:    139 (RENDER) Minor opcode: 25 (RenderCompositeGlyphs32) Resource id:  0x2c00ca6
-	// Das liegt offensichtlich an QFontMetrics, das mit Threads Mühe zu haben scheint.
-
-    for (int i = 0; i < declarations.count(); ++i) {
-        const QCss::Declaration &decl = declarations.at(i);
-        if (decl.values.isEmpty()) continue;
-
-        QCss::KnownValue identifier = QCss::UnknownValue;
-        if (decl.values.first().type == QCss::Value::KnownIdentifier)
-            identifier = static_cast<QCss::KnownValue>(decl.values.first().variant.toInt());
-
-        switch (decl.propertyId) {
-        case QCss::BorderColor: borderBrush = QBrush(decl.colorValue()); break;
-        case QCss::BorderStyles:
-            if (decl.styleValue() != QCss::BorderStyle_Unknown && decl.styleValue() != QCss::BorderStyle_Native)
-                borderStyle = static_cast<QTextFrameFormat::BorderStyle>(decl.styleValue() - 1);
-            break;
-        case QCss::BorderWidth:
-            tableBorder = extractor.lengthValue(decl);
-            break;
-        case QCss::Color: charFormat.setForeground(decl.colorValue()); break;
-        case QCss::Float:
-            cssFloat = QTextFrameFormat::InFlow;
-            switch (identifier) {
-            case QCss::Value_Left: cssFloat = QTextFrameFormat::FloatLeft; break;
-            case QCss::Value_Right: cssFloat = QTextFrameFormat::FloatRight; break;
-            default: break;
-            }
-            break;
-        case QCss::QtBlockIndent:
-            blockFormat.setIndent(decl.values.first().variant.toInt());
-            break;
-//       case QCss::LineHeight: {
-//            qreal lineHeight;
-//            if (decl.realValue(&lineHeight, "px")) {
-//                blockFormat.setLineHeight(lineHeight, QTextBlockFormat::FixedHeight);
-//            } else {
-//                bool ok;
-//                QString value = decl.d->values.first().toString();
-//                lineHeight = value.toDouble(&ok);
-//                if (ok)
-//                    blockFormat.setLineHeight(lineHeight, QTextBlockFormat::ProportionalHeight);
-//                else
-//                    blockFormat.setLineHeight(0, QTextBlockFormat::SingleHeight);
-//            }
-//            break; }
-        case QCss::TextIndent: {
-            qreal indent = 0;
-            if (decl.realValue(&indent, "px"))
-                blockFormat.setTextIndent(indent);
-            break; }
-        case QCss::QtListIndent:
-            if (decl.intValue(&cssListIndent))
-                hasCssListIndent = true;
-            break;
-        case QCss::QtParagraphType:
-            if (decl.values.first().variant.toString().compare(QLatin1String("empty"), Qt::CaseInsensitive) == 0)
-                isEmptyParagraph = true;
-            break;
-        case QCss::QtTableType:
-            if (decl.values.first().variant.toString().compare(QLatin1String("frame"), Qt::CaseInsensitive) == 0)
-                isTextFrame = true;
-            else if (decl.values.first().variant.toString().compare(QLatin1String("root"), Qt::CaseInsensitive) == 0) {
-                isTextFrame = true;
-                isRootFrame = true;
-            }
-            break;
-        case QCss::QtUserState:
-            userState = decl.values.first().variant.toInt();
-            break;
-        case QCss::Whitespace:
-            switch (identifier) {
-            case QCss::Value_Normal: wsm = TextHtmlParserNode::WhiteSpaceNormal; break;
-            case QCss::Value_Pre: wsm = TextHtmlParserNode::WhiteSpacePre; break;
-            case QCss::Value_NoWrap: wsm = TextHtmlParserNode::WhiteSpaceNoWrap; break;
-            case QCss::Value_PreWrap: wsm = TextHtmlParserNode::WhiteSpacePreWrap; break;
-            default: break;
-            }
-            break;
-        case QCss::VerticalAlignment:
-            switch (identifier) {
-            case QCss::Value_Sub: charFormat.setVerticalAlignment(QTextCharFormat::AlignSubScript); break;
-            case QCss::Value_Super: charFormat.setVerticalAlignment(QTextCharFormat::AlignSuperScript); break;
-            case QCss::Value_Middle: charFormat.setVerticalAlignment(QTextCharFormat::AlignMiddle); break;
-            case QCss::Value_Top: charFormat.setVerticalAlignment(QTextCharFormat::AlignTop); break;
-            case QCss::Value_Bottom: charFormat.setVerticalAlignment(QTextCharFormat::AlignBottom); break;
-            default: charFormat.setVerticalAlignment(QTextCharFormat::AlignNormal); break;
-            }
-            break;
-        case QCss::PageBreakBefore:
-            switch (identifier) {
-            case QCss::Value_Always: blockFormat.setPageBreakPolicy(blockFormat.pageBreakPolicy() | QTextFormat::PageBreak_AlwaysBefore); break;
-            case QCss::Value_Auto: blockFormat.setPageBreakPolicy(blockFormat.pageBreakPolicy() & ~QTextFormat::PageBreak_AlwaysBefore); break;
-            default: break;
-            }
-            break;
-        case QCss::PageBreakAfter:
-            switch (identifier) {
-            case QCss::Value_Always: blockFormat.setPageBreakPolicy(blockFormat.pageBreakPolicy() | QTextFormat::PageBreak_AlwaysAfter); break;
-            case QCss::Value_Auto: blockFormat.setPageBreakPolicy(blockFormat.pageBreakPolicy() & ~QTextFormat::PageBreak_AlwaysAfter); break;
-            default: break;
-            }
-            break;
-        case QCss::TextUnderlineStyle:
-            switch (identifier) {
-            case QCss::Value_None: charFormat.setUnderlineStyle(QTextCharFormat::NoUnderline); break;
-            case QCss::Value_Solid: charFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline); break;
-            case QCss::Value_Dashed: charFormat.setUnderlineStyle(QTextCharFormat::DashUnderline); break;
-            case QCss::Value_Dotted: charFormat.setUnderlineStyle(QTextCharFormat::DotLine); break;
-            case QCss::Value_DotDash: charFormat.setUnderlineStyle(QTextCharFormat::DashDotLine); break;
-            case QCss::Value_DotDotDash: charFormat.setUnderlineStyle(QTextCharFormat::DashDotDotLine); break;
-            case QCss::Value_Wave: charFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline); break;
-            default: break;
-            }
-            break;
-        case QCss::ListStyleType:
-        case QCss::ListStyle:
-            setListStyle(decl.values);
-            break;
-//        case QCss::QtListNumberPrefix:
-//            textListNumberPrefix = decl.values.first().variant.toString();
-//            break;
-//        case QCss::QtListNumberSuffix:
-//            textListNumberSuffix = decl.values.first().variant.toString();
-//            break;
-        default: break;
-        }
-    }
-
-    if (f.resolve() & QFont::SizeResolved) {
-        if (f.pointSize() > 0) {
-            charFormat.setFontPointSize(f.pointSize());
-        } else if (f.pixelSize() > 0) {
-            charFormat.setProperty(QTextFormat::FontPixelSize, f.pixelSize());
-        }
-    }
-    if (f.resolve() & QFont::StyleResolved)
-        charFormat.setFontItalic(f.style() != QFont::StyleNormal);
-
-    if (f.resolve() & QFont::WeightResolved)
-        charFormat.setFontWeight(f.weight());
-
-    if (f.resolve() & QFont::FamilyResolved)
-        charFormat.setFontFamily(f.family());
-
-    if (f.resolve() & QFont::UnderlineResolved)
-        charFormat.setUnderlineStyle(f.underline() ? QTextCharFormat::SingleUnderline : QTextCharFormat::NoUnderline);
-
-    if (f.resolve() & QFont::OverlineResolved)
-        charFormat.setFontOverline(f.overline());
-
-    if (f.resolve() & QFont::StrikeOutResolved)
-        charFormat.setFontStrikeOut(f.strikeOut());
-
-    if (f.resolve() & QFont::CapitalizationResolved)
-        charFormat.setFontCapitalization(f.capitalization());
-
-    if (adjustment >= -1)
-        charFormat.setProperty(QTextFormat::FontSizeAdjustment, adjustment);
-
-    {
-        Qt::Alignment ignoredAlignment;
-        QCss::Repeat ignoredRepeat;
-        QString bgImage;
-        QBrush bgBrush;
-        QCss::Origin ignoredOrigin, ignoredClip;
-        QCss::Attachment ignoredAttachment;
-        extractor.extractBackground(&bgBrush, &bgImage, &ignoredRepeat, &ignoredAlignment,
-                                    &ignoredOrigin, &ignoredAttachment, &ignoredClip);
-
-        if (!bgImage.isEmpty() && resourceProvider) {
-            applyBackgroundImage(bgImage, resourceProvider);
-        } else if (bgBrush.style() != Qt::NoBrush) {
-            charFormat.setBackground(bgBrush);
-        }
-    }
-}
-
 void TextHtmlParserNode::applyBackgroundImage(const QString &url, const QTextDocument *resourceProvider)
 {
 #ifdef _with_resource_provider
@@ -1632,18 +1278,8 @@ static void setWidthAttribute(QTextLength *width, QString value)
 
 void TextHtmlParserNode::parseStyleAttribute(const QString &value, const QTextDocument *resourceProvider)
 {
-#ifdef NO_CSSPARSER
 	Q_ASSERT( false );
 	return;
-#endif
-    QString css = value;
-    css.prepend(QLatin1String("* {"));
-    css.append(QLatin1Char('}'));
-    QCss::Parser parser(css);
-    QCss::StyleSheet sheet;
-    parser.parse(&sheet ); //, Qt::CaseInsensitive);
-    if (sheet.styleRules.count() != 1) return;
-    applyCssDeclarations(sheet.styleRules.at(0).declarations, resourceProvider);
 }
 
 QStringList TextHtmlParser::parseAttributes()
@@ -1880,116 +1516,6 @@ void TextHtmlParser::applyAttributes(const QStringList &attributes)
         importStyleSheet(linkHref);
 }
 
-class TextHtmlStyleSelector : public QCss::StyleSelector
-{
-public:
-    inline TextHtmlStyleSelector(const TextHtmlParser *parser)
-        : parser(parser) {} // nameCaseSensitivity = Qt::CaseInsensitive; }
-
-    virtual QStringList nodeNames(NodePtr node) const;
-    virtual QString attribute(NodePtr node, const QString &name) const;
-    virtual bool hasAttributes(NodePtr node) const;
-    virtual bool isNullNode(NodePtr node) const;
-    virtual NodePtr parentNode(NodePtr node) const;
-    virtual NodePtr previousSiblingNode(NodePtr node) const;
-    virtual NodePtr duplicateNode(NodePtr node) const;
-    virtual void freeNode(NodePtr node) const;
-    bool nodeNameEquals(NodePtr node, const QString& nodeName) const
-    {
-        return false; // ROCHUS: TODO
-    }
-    bool hasAttribute(NodePtr node, const QString &name) const
-    {
-        return false; // ROCHUS: dieser wird nicht aufgerufen
-    }
-private:
-    const TextHtmlParser *parser;
-};
-
-QStringList TextHtmlStyleSelector::nodeNames(NodePtr node) const
-{
-    return QStringList(parser->at(node.id).tag.toLower());
-}
-
-static inline int findAttribute(const QStringList &attributes, const QString &name)
-{
-    int idx = -1;
-    do {
-        idx = attributes.indexOf(name, idx + 1);
-    } while (idx != -1 && (idx % 2 == 1));
-    return idx;
-}
-
-QString TextHtmlStyleSelector::attribute(NodePtr node, const QString &name) const
-{
-    const QStringList &attributes = parser->at(node.id).attributes;
-    const int idx = findAttribute(attributes, name);
-    if (idx == -1)
-        return QString();
-    return attributes.at(idx + 1);
-}
-
-bool TextHtmlStyleSelector::hasAttributes(NodePtr node) const
-{
-   const QStringList &attributes = parser->at(node.id).attributes;
-   return !attributes.isEmpty();
-}
-
-bool TextHtmlStyleSelector::isNullNode(NodePtr node) const
-{
-    return node.id == 0;
-}
-
-QCss::StyleSelector::NodePtr TextHtmlStyleSelector::parentNode(NodePtr node) const
-{
-    NodePtr parent;
-    parent.id = 0;
-    if (node.id) {
-        parent.id = parser->at(node.id).parent;
-    }
-    return parent;
-}
-
-QCss::StyleSelector::NodePtr TextHtmlStyleSelector::duplicateNode(NodePtr node) const
-{
-    return node;
-}
-
-QCss::StyleSelector::NodePtr TextHtmlStyleSelector::previousSiblingNode(NodePtr node) const
-{
-    NodePtr sibling;
-    sibling.id = 0;
-    if (!node.id)
-        return sibling;
-    int parent = parser->at(node.id).parent;
-    if (!parent)
-        return sibling;
-    const int childIdx = parser->at(parent).children.indexOf(node.id);
-    if (childIdx <= 0)
-        return sibling;
-    sibling.id = parser->at(parent).children.at(childIdx - 1);
-    return sibling;
-}
-
-void TextHtmlStyleSelector::freeNode(NodePtr) const
-{
-}
-
-void TextHtmlParser::resolveStyleSheetImports(const QCss::StyleSheet &sheet)
-{
-#ifdef NO_CSSPARSER
-	Q_ASSERT( false );
-	return;
-#endif
-	for (int i = 0; i < sheet.importRules.count(); ++i)
-	{
-        const QCss::ImportRule &rule = sheet.importRules.at(i);
-        if (rule.media.isEmpty()
-            || rule.media.contains(QLatin1String("screen"), Qt::CaseInsensitive))
-            importStyleSheet(rule.href);
-    }
-}
-
 void TextHtmlParser::importStyleSheet(const QString &href)
 {
 #ifdef _with_resource_provider
@@ -2015,44 +1541,6 @@ void TextHtmlParser::importStyleSheet(const QString &href)
         resolveStyleSheetImports(sheet);
     }
 #endif
-}
-
-QVector<QCss::Declaration> TextHtmlParser::declarationsForNode(int node) const
-{
-#ifdef NO_CSSPARSER
-	Q_ASSERT( false );
-	return QVector<QCss::Declaration>();
-#endif
-	QVector<QCss::Declaration> decls;
-
-    TextHtmlStyleSelector selector(this);
-
-    int idx = 0;
-    selector.styleSheets.resize((resourceProvider ? 1 : 0)
-                                + externalStyleSheets.count()
-                                + inlineStyleSheets.count());
-#ifdef _with_resource_provider
-   if (resourceProvider)
-        selector.styleSheets[idx++] = resourceProvider->docHandle()->parsedDefaultStyleSheet;
-#endif
-
-    for (int i = 0; i < externalStyleSheets.count(); ++i, ++idx)
-        selector.styleSheets[idx] = externalStyleSheets.at(i).sheet;
-
-    for (int i = 0; i < inlineStyleSheets.count(); ++i, ++idx)
-        selector.styleSheets[idx] = inlineStyleSheets.at(i);
-
-    selector.medium = QLatin1String("screen");
-
-    QCss::StyleSelector::NodePtr n;
-    n.id = node;
-
-    const char *extraPseudo = 0;
-    if (nodes.at(node).id == Html_a && nodes.at(node).hasHref)
-        extraPseudo = "link";
-    decls = selector.declarationsForNode(n, extraPseudo);
-
-    return decls;
 }
 
 bool TextHtmlParser::nodeIsChildOf(int i, TextHTMLElements id) const

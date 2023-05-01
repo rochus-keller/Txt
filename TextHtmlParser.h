@@ -5,7 +5,7 @@
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
-** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.info>
+** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
@@ -49,7 +49,6 @@
 #include "QtGui/qfont.h"
 #include "QtGui/qtextdocument.h"
 #include "QtGui/qtextcursor.h"
-#include "private/qcssparser_p.h"
 
 namespace Txt
 {
@@ -230,11 +229,7 @@ namespace Txt
 	    bool isNestedList(const TextHtmlParser *parser) const;
 	
 	    void parseStyleAttribute(const QString &value, const QTextDocument *resourceProvider);
-	
-	    void applyCssDeclarations(const QVector<QCss::Declaration> &declarations, const QTextDocument *resourceProvider);
-	
-	    void setListStyle(const QVector<QCss::Value> &cssValues);
-	
+		
 	    void applyBackgroundImage(const QString &url, const QTextDocument *resourceProvider);
 	
 	    bool hasOnlyWhitespace() const;
@@ -300,21 +295,8 @@ namespace Txt
 	    bool nodeIsChildOf(int i, TextHTMLElements id) const;
 	
 	
-	    QVector<QCss::Declaration> declarationsForNode(int node) const;
-	    void resolveStyleSheetImports(const QCss::StyleSheet &sheet);
 	    void importStyleSheet(const QString &href);
-	
-	    struct ExternalStyleSheet
-	    {
-	        inline ExternalStyleSheet() {}
-	        inline ExternalStyleSheet(const QString &_url, const QCss::StyleSheet &_sheet)
-	            : url(_url), sheet(_sheet) {}
-	        QString url;
-	        QCss::StyleSheet sheet;
-	    };
-	    QVector<ExternalStyleSheet> externalStyleSheets;
-	    QVector<QCss::StyleSheet> inlineStyleSheets;
-	
+		
 	    const QTextDocument *resourceProvider;
 	};
 }

@@ -2,7 +2,7 @@
 **
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
-** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.info>
+** Copyright 2013-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 **
 ** This file is part of the QtGui module of the Qt Toolkit.
 **
@@ -174,14 +174,14 @@ void TextHtmlImporter::import()
 				QLatin1String(Styles::s_linkSchema), Qt::CaseInsensitive ) )
 		{
 			const QByteArray link = QByteArray::fromBase64( currentNode->charFormat.anchorHref().mid(
-																::strlen( Styles::s_linkSchema ) ).toAscii() );
+                                                                ::strlen( Styles::s_linkSchema ) ).toUtf8() );
 			TextCursor cur(cursor);
 			if( !d_lri->renderLink( cur, link ) )
 				cur.insertUrl( d_lri->renderHref( link ), true, currentNode->text ); // falls extern wandle in xoid
 			const int oldcur = currentNodeIdx;
 			while( ++currentNodeIdx < count() && at(currentNodeIdx).parent >= oldcur )
 				; // Fix 13.3.16, vorher hier currentNodeIdx++ // qDebug() << oldcur << currentNodeIdx << at(currentNodeIdx).parent;
-			currentNodeIdx--; // eins zurück wegen for-incrementer
+			currentNodeIdx--; // eins zurÃ¼ck wegen for-incrementer
 			cursor = cur.qt();
 			compressNextWhitespace = CollapseWhiteSpace;
 			continue;
@@ -367,7 +367,7 @@ TextHtmlImporter::ProcessNodeResult TextHtmlImporter::processSpecialNodes()
 
             QTextListFormat listFmt;
             listFmt.setStyle(style);
-            // Nicht unterstützt in Qt 4.4.3
+            // Nicht unterstÃ¼tzt in Qt 4.4.3
 //            if (!currentNode->textListNumberPrefix.isNull())
 //                listFmt.setNumberPrefix(currentNode->textListNumberPrefix);
 //            if (!currentNode->textListNumberSuffix.isNull())

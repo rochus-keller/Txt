@@ -1,11 +1,11 @@
 /*
-* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -57,7 +57,7 @@ const float Styles::s_titleFactor[] =
 	0.0,		//H5, 
 	0.0,		//H6, // Titles
 	0.0,		//PAR,	// Paragraph
-	0.0,		//_CODE,	// Non-Breakable Line, nicht in Menü angeboten
+	0.0,		//_CODE,	// Non-Breakable Line, nicht in MenÃ¼ angeboten
 };
 
 void Styles::setup( float pointSize, float titleFactor, float margin, bool parFirstIndent )
@@ -68,17 +68,21 @@ void Styles::setup( float pointSize, float titleFactor, float margin, bool parFi
 	stdChar.setFontWeight( QFont::Normal );
 	stdChar.setFontUnderline( false );
 	stdChar.setFontItalic( false );
+    // looks ugly: stdChar.setFontStyleStrategy(QFont::NoAntialias);
 
 	QTextBlockFormat stdBlock;
 	stdBlock.setLeftMargin( 0 );
 	stdBlock.setNonBreakableLines( false );
 	stdBlock.setProperty( PropBlockType, PAR );
 	stdBlock.setAlignment( Qt::AlignLeft );
-	stdBlock.setTopMargin( margin );
-	stdBlock.setBottomMargin( margin );
 	stdBlock.setTextIndent( 0 );
+    stdBlock.setLineHeight(123,QTextBlockFormat::ProportionalHeight); // empirically evaluated, necessary in LeanQt for equal look to Qt 4.4
+    // has no effect, should be in frame format instead of block format:
+    //stdBlock.setTopMargin( margin );
+    //stdBlock.setBottomMargin( margin );
 
-	d_em.setFontItalic( true );
+
+    d_em.setFontItalic( true );
 
 	d_strong.setFontWeight( QFont::Bold );
 
@@ -87,7 +91,7 @@ void Styles::setup( float pointSize, float titleFactor, float margin, bool parFi
 	d_strike.setFontStrikeOut( true );
 
 	//d_fixed.setProperty( PropFixed, true );
-	d_fixed.setFontFamily( "courier" ); // sonst passiert nichts bei Änderung, erst bei Reload
+	d_fixed.setFontFamily( "courier" ); // sonst passiert nichts bei Ã„nderung, erst bei Reload
 	d_fixed.setFontFixedPitch( true );
 
 	d_super.setVerticalAlignment( QTextCharFormat::AlignSuperScript );

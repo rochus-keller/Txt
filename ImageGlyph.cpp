@@ -1,11 +1,11 @@
 /*
-* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2009-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -53,7 +53,7 @@ QImage ImageGlyph::parseDataSrc(const QString & src)
 	if( src.mid( semi + 1, 7 ) != QLatin1String( "base64,") )
 		return QImage();
 	QImage img;
-	img.loadFromData( QByteArray::fromBase64(src.mid( semi + 1 + 7 ).toAscii()), format.toAscii() );
+    img.loadFromData( QByteArray::fromBase64(src.mid( semi + 1 + 7 ).toUtf8()), format.toUtf8() );
 	return img;
 }
 
@@ -81,7 +81,7 @@ QSizeF ImageGlyph::intrinsicSize(QTextDocument *doc, int posInDocument, const QT
 
     // QFontMetrics fm( tf.font() );
     // imgSize.setHeight( imgSize.height() - fm.descent() - 1 );
-    // Wenn man die Höhe verändert, wird das Bild gestaucht.
+    // Wenn man die HÃ¶he verÃ¤ndert, wird das Bild gestaucht.
 	return imgSize;
 }
 
@@ -91,8 +91,8 @@ void ImageGlyph::drawObject(QPainter *p, const QRectF &r, QTextDocument *doc,
 	QTextCharFormat tf = format.toCharFormat();
     // QFontMetricsF fm( tf.font() );
 	// Qt positioniert das Bild auf der Grundlinie der Schrift.
-	// Da wir in intrinsicSize die Höhe gestaucht habe, machen wir hier nach unten wieder wett.
-    // Bei grösseren Bildern sieht das komisch aus; wenn keine Buchstaben vorhanden, wird unten
+	// Da wir in intrinsicSize die HÃ¶he gestaucht habe, machen wir hier nach unten wieder wett.
+    // Bei grÃ¶sseren Bildern sieht das komisch aus; wenn keine Buchstaben vorhanden, wird unten
     // abgeschnitten.
     QRectF rr = r; // r.adjusted( 0, 0, 0, fm.descent() + 1 );
 

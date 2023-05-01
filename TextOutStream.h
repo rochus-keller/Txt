@@ -2,13 +2,13 @@
 #define __Txt_TextOutStream__
 
 /*
-* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public

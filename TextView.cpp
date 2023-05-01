@@ -1,11 +1,11 @@
 /*
-* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -23,7 +23,7 @@
 #include <qpainter.h>
 #include <qevent.h>
 #include <qdebug.h>
-#include <qmime.h>
+//#include <qmime.h>
 #include <qdrag.h>
 #include <qclipboard.h>
 #include <qmenu.h>
@@ -124,7 +124,7 @@ void TextView::emitInvalidate( QRectF r )
 	QRect t=r.toRect(); // TEST
 	qDebug( "x=%d y=%d w=%d h=%d", t.x(), t.y(), t.width(), t.height() );
 	*/
-	// Layout::update kommt bei jeglicher Änderung, von setDoc über KeyDown bis Format,
+	// Layout::update kommt bei jeglicher Ã„nderung, von setDoc Ã¼ber KeyDown bis Format,
 	// und immer wird gesamter Bereich invalidiert.
 	emit invalidate( r );
 }
@@ -161,7 +161,7 @@ void TextView::setDocument(QTextDocument *document)
         }
 
 		// NOTE update ist eigentlich ein sinnloser Event.
-		// Dummerweise erfährt man aber bei Cut/Copy/Paste/Undo/Redo ansonsten nichts vom Update
+		// Dummerweise erfÃ¤hrt man aber bei Cut/Copy/Paste/Undo/Redo ansonsten nichts vom Update
         ( QObject::connect(doc->documentLayout(), SIGNAL(update(QRectF)), this, SLOT(emitInvalidate(QRectF))));
         ( QObject::connect(doc->documentLayout(), SIGNAL(documentSizeChanged(QSizeF)), this, SLOT(emitExtentChanged())));
         cursor.set( QTextCursor(doc) );
@@ -449,7 +449,7 @@ qreal TextView::widhtToHeight( QTextDocument* doc, qreal width )
 void TextView::relayoutDocument( qreal len )
 {
 
-	/* Empirisch unnötig
+	/* Empirisch unnÃ¶tig
     QAbstractTextDocumentLayout *layout = doc->documentLayout();
 	QTextDocumentLayout *tlayout = qobject_cast<QTextDocumentLayout *>(layout);
     if( tlayout ) 

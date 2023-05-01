@@ -1,11 +1,11 @@
 /*
-* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.info>
+* Copyright 2007-2017 Rochus Keller <mailto:me@rochus-keller.ch>
 *
 * This file is part of the CrossLine Txt library.
 *
 * The following is the license that applies to this copy of the
 * library. For a license to use the library under conditions
-* other than those described here, please email to me@rochus-keller.info.
+* other than those described here, please email to me@rochus-keller.ch.
 *
 * GNU General Public License Usage
 * This file may be used under the terms of the GNU General Public
@@ -311,7 +311,7 @@ void TextOutStream::emitDocument(const QTextDocument* doc, Stream::DataWriter& o
 	{
 		// Gehe durch alle Frames des Root. Der Frame-Iter liefert entweder
 		// Frames oder Blocks, die unmittelbar im Root sind.
-		// Da wir keine verschachtelten Frames unterstützen, sollten wir hier
+		// Da wir keine verschachtelten Frames unterstÃ¼tzen, sollten wir hier
 		// alles sehen, was es gibt.
 
         if( QTextFrame *f = it.currentFrame() ) 
@@ -427,7 +427,7 @@ void TextOutStream::emitBlock(const QTextBlock &block, Stream::DataWriter& out )
                 out.writeSlot( DataCell().setLob( tf.property(Styles::PropLink).toByteArray() ),
                                NameTag( "link" ) );
             else
-                out.writeSlot( DataCell().setUrl( tf.anchorHref().toAscii() ), NameTag( "url" ) );
+                out.writeSlot( DataCell().setUrl( tf.anchorHref().toUtf8() ), NameTag( "url" ) );
 			QString text = f.text();
 			if( tf.hasProperty(Styles::PropAnchorId) )
 			{
@@ -513,7 +513,7 @@ void TextOutStream::emitCode(const QTextFrame * frame, Stream::DataWriter& out )
 		QTextBlock block = it.currentBlock();
 		assert( block.isValid() );
 		QTextBlockFormat f = block.blockFormat();
-		//v.setByte( (Root::UInt8)f.indent() ); // TODO: ist indent im block.text schon berücksichtigt?
+		//v.setByte( (Root::UInt8)f.indent() ); // TODO: ist indent im block.text schon berÃ¼cksichtigt?
 		//out.writeSlot( v );
 		lines += block.text() + QLatin1String( "\r\n" );
 	}
