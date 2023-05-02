@@ -76,7 +76,9 @@ void Styles::setup( float pointSize, float titleFactor, float margin, bool parFi
 	stdBlock.setProperty( PropBlockType, PAR );
 	stdBlock.setAlignment( Qt::AlignLeft );
 	stdBlock.setTextIndent( 0 );
-    stdBlock.setLineHeight(123,QTextBlockFormat::ProportionalHeight); // empirically evaluated, necessary in LeanQt for equal look to Qt 4.4
+    // stdBlock.setLineHeight(123,QTextBlockFormat::ProportionalHeight); // empirically evaluated, necessary in LeanQt for equal look to Qt 4.4
+    // proportionla height has the disadvantage that embedded images get an empty space below
+    stdBlock.setLineHeight( 3, QTextBlockFormat::LineDistanceHeight );
     // has no effect, should be in frame format instead of block format:
     //stdBlock.setTopMargin( margin );
     //stdBlock.setBottomMargin( margin );

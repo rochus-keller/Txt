@@ -194,10 +194,14 @@ bool TextCtrl::keyPressEvent(QKeyEvent *e)
 			me->getCursor().unindentCodeLines();
 			break;
 		}else
+        {
 			me->getCursor().deleteCharOrSelection( true );
+            d_view->invalidate(); // TODO: can we do more specific?
+        }
         break;
     case Qt::Key_Delete:
         me->getCursor().deleteCharOrSelection( false );
+        d_view->invalidate(); // TODO: can we do more specific?
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
