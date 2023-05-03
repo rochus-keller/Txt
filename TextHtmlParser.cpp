@@ -1278,7 +1278,6 @@ static void setWidthAttribute(QTextLength *width, QString value)
 
 void TextHtmlParserNode::parseStyleAttribute(const QString &value, const QTextDocument *resourceProvider)
 {
-	Q_ASSERT( false );
 	return;
 }
 
