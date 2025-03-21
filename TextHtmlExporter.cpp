@@ -196,7 +196,7 @@ void TextHtmlExporter::emitAttribute(const char *attribute, const QString &value
     html += QLatin1Char(' ');
     html += QLatin1String(attribute);
     html += QLatin1String("=\"");
-    html += Qt::escape( value ); // RISK: value.toHtmlEscaped();
+    html += value.toHtmlEscaped();
     html += QLatin1Char('"');
 }
 
@@ -471,7 +471,7 @@ void TextHtmlExporter::emitFontFamily(const QString &family)
         quote = QLatin1String("&quot;");
 
     html += quote;
-    html += Qt::escape( family ); //.toHtmlEscaped();
+    html += family.toHtmlEscaped();
     html += quote;
     html += QLatin1Char(';');
 }
@@ -505,13 +505,13 @@ void TextHtmlExporter::emitFragment(const QTextFragment &fragment)
         const QString name = format.anchorName();
         if (!name.isEmpty()) {
             html += QLatin1String("<a name=\"");
-            html += Qt::escape( name ); //.toHtmlEscaped();
+            html += name.toHtmlEscaped();
             html += QLatin1String("\"></a>");
         }
         const QString href = format.anchorHref();
         if (!href.isEmpty()) {
             html += QLatin1String("<a href=\"");
-            html += Qt::escape( href ); //.toHtmlEscaped();
+            html += href.toHtmlEscaped();
             html += QLatin1String("\">");
             closeAnchor = true;
         }
@@ -560,7 +560,7 @@ void TextHtmlExporter::emitFragment(const QTextFragment &fragment)
     } else {
         Q_ASSERT(!txt.contains(QChar::ObjectReplacementCharacter));
 
-        txt = Qt::escape( txt ); //.toHtmlEscaped();
+        txt = txt.toHtmlEscaped();
 
         // split for [\n{LineSeparator}]
         QString forcedLineBreakRegExp = QString::fromLatin1("[\\na]");
@@ -833,6 +833,7 @@ QString TextHtmlExporter::findUrlForImage(const QTextDocument *doc, qint64 cache
     if (QTextDocument *parent = qobject_cast<QTextDocument *>(doc->parent()))
         return findUrlForImage(parent, cacheKey, isPixmap);
 
+#if defined LEANQT && defined QT_GUI
     if (doc && doc->docHandle()) {
         QTextDocumentPrivate *priv = doc->docHandle();
         QMap<QUrl, QVariant>::const_iterator it = priv->cachedResources.constBegin();
@@ -853,6 +854,7 @@ QString TextHtmlExporter::findUrlForImage(const QTextDocument *doc, qint64 cache
         if (it != priv->cachedResources.constEnd())
             url = it.key().toString();
     }
+#endif
 
     return url;
 }

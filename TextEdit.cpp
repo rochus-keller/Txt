@@ -20,10 +20,11 @@
 #include "TextEdit.h"
 #include <QTextDocument>
 #include <QPainter>
-#include <Gui2/AutoMenu.h>
+#include <GuiTools/AutoMenu.h>
 #include <QApplication>
 #include <QClipboard>
 #include <QtDebug>
+#include <QMimeData>
 #include <Stream/DataWriter.h>
 #include "TextHtmlExporter.h"
 #include "TextOutStream.h"
